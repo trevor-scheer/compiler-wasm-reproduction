@@ -46,3 +46,30 @@ npm test -- --safari
 * The `static` folder contains any files that you want copied as-is into the final build. It contains an `index.html` file which loads the `index.js` file.
 
 * The `tests` folder contains your Rust unit tests.
+
+## Reproduction notes
+
+Requires `wasm-pack`
+
+Init:
+```
+npm i && npm start
+```
+
+Be patient during builds, they don't take long but they're sometimes deceivingly "done" when they're really not.
+
+The addition or removal of this line in `lib.rs` will cause the error to appear or disappear:
+```rust
+let mut compiler = ApolloCompiler::new();
+```
+
+```
+ERROR in ./pkg/index_bg.wasm
+Module not found: Error: Can't resolve 'env' in '/Users/trevorscheer/Desktop/compiler-wasm-reproduction/pkg'
+ @ ./pkg/index_bg.wasm
+ @ ./pkg/index.js
+ @ ./js/index.js
+ ```
+
+https://github.com/rustwasm/wasm-bindgen/discussions/3500
+ This thread is very helpful. I followed the instructions from the accepted answer to determine the issue is a usage of `Instant::now`, but it's happening in a dependency and the tools don't identify which one.
